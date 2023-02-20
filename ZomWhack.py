@@ -1,6 +1,7 @@
 import pygame, sys
 import os
 import random
+import time
 
 from pygame.locals import *
 from os import path
@@ -18,8 +19,13 @@ FPS = 60
 #Game Variable
 cols = 3
 rows = 2
+
+# timer = 3000
+start_time = pygame.time.get_ticks()
+
 background = (207, 137, 0)
 white = (255, 255, 255)
+
 
 def print_text(text, font_size, font_color, x, y):
     font = pygame.font.SysFont(None, font_size)
@@ -52,6 +58,11 @@ def cover_zom():
 
 def random_zombie():
     random_hole = random.choice(hole_list_rect)
+    # timer = pygame.get_time()
+    # current_time = pygame.time.get_ticks()
+    # if current_time - start_time >= timer:
+    #     zom_rect.visible = False
+
     zom_rect.midtop = random_hole.midbottom
     return random_hole[1]
 
@@ -68,6 +79,9 @@ def start_countdown():
 pygame.init()
 pygame.mixer.init()
 
+pygame.mixer.music.load(path.join(sound_folder, 'background.mp3'))
+pygame.mixer.music.play() # -1 means the music will loop indefinitely
+
 #Game Init
 screen = pygame.display.set_mode((width, height))
 pygame.display.set_caption('World Saver')
@@ -78,6 +92,8 @@ mouse_pos = (0, 0)
 pygame.mouse.set_visible(False)
 ready_time = 5
 score = 0
+hit = 0
+miss = 0
 pos = 0
 game_time = 30 + 1
 game_over = False
@@ -85,9 +101,9 @@ last = pygame.time.get_ticks()
 last_countdown = pygame.time.get_ticks()
 
 #Sound
-hit_sfx = pygame.mixer.Sound(path.join(sound_folder, 'shot.mp3'))
-# miss_sfx = pygame.mixer.Sound(path.join(sound_folder, 'missshot.mp3'))
-pygame.mixer.music.load(path.join(sound_folder, 'missshot.mp3'))
+hit_sfx = pygame.mixer.Sound(path.join(sound_folder, 'hit.mp3'))
+miss_sfx = pygame.mixer.Sound(path.join(sound_folder, 'miss.mp3'))
+zombie_sfx = pygame.mixer.Sound(path.join(sound_folder, 'zombie.mp3'))
 
 #Image
 hole_base = pygame.image.load(path.join(img_folder, 'Hole_5.png')).convert_alpha()
@@ -117,13 +133,17 @@ while run:
                 if zom_rect.collidepoint(mouse_pos):
                     # print("Collide")
                     score += 2
+                    hit += 1
                     hit_sfx.play()
                     pos = random_zombie()
+                    pygame.time.delay(25)
+                    zombie_sfx.play()
                 else:
                     if score > 0:
                         score -= 1
+                        miss += 1
                     # miss_sfx.play()
-                    pygame.mixer.music.play()
+                    miss_sfx.play()
                     pos = random_zombie()
                 aim_img = aim[1]
         if event.type == MOUSEBUTTONUP and not game_over:
@@ -131,6 +151,7 @@ while run:
                 aim_img = aim[0]
         if event.type == KEYUP and game_over:
             if event.key == K_r:
+                pygame.mixer.music.play()
                 ready_time = 5
                 score = 0
                 pos = 0
@@ -166,6 +187,8 @@ while run:
         if not game_over:
             start_countdown()
             print_text(f"Score: {score}", 36, (255, 255, 255), 10, 20)
+            print_text(f"Hi: {hit}", 36, (255, 255, 255), 10, 40)
+            print_text(f"Miss: {miss}", 36, (255, 255, 255), 10, 60)
 
     cover_zom()
 
