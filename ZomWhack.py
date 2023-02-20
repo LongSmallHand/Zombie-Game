@@ -78,8 +78,10 @@ mouse_pos = (0, 0)
 pygame.mouse.set_visible(False)
 ready_time = 5
 score = 0
+hit_score = 0
+miss_score = 0
 pos = 0
-game_time = 30 + 1
+game_time = 20 + 1
 game_over = False
 last = pygame.time.get_ticks()
 last_countdown = pygame.time.get_ticks()
@@ -117,11 +119,13 @@ while run:
                 if zom_rect.collidepoint(mouse_pos):
                     # print("Collide")
                     score += 2
+                    hit_score += 1
                     hit_sfx.play()
                     pos = random_zombie()
                 else:
                     if score > 0:
                         score -= 1
+                        miss_score += 1
                     # miss_sfx.play()
                     pygame.mixer.music.play()
                     pos = random_zombie()
@@ -133,8 +137,10 @@ while run:
             if event.key == K_r:
                 ready_time = 5
                 score = 0
+                hit_score = 0
+                miss_score = 0
                 pos = 0
-                game_time = 30 + 1
+                game_time = 20 + 1
                 game_over = False
 
         mouse_pos = pygame.mouse.get_pos()
@@ -172,7 +178,7 @@ while run:
     if game_time < 0:
         game_over = True
         print_text("GAME OVER", 36, (255, 255, 255), (width // 2) - 70, 30)
-        print_text(f"SCORE: {score}", 36, (255, 255, 255), (width // 2) - 50, 60)
+        print_text(f"SCORE: {score}, HIT: {hit_score}, MISS: {miss_score}", 36, (255, 255, 255), (width // 2) - 160, 60)
         print_text("PRESS R TO RESTART", 36, (255, 255, 255), (width // 2) - 120, 90)
 
 
