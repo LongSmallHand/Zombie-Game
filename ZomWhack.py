@@ -1,7 +1,6 @@
 import pygame, sys
 import os
 import random
-import time
 
 from pygame.locals import *
 from os import path
@@ -20,7 +19,7 @@ FPS = 60
 cols = 3
 rows = 2
 
-# timer = 3000
+
 start_time = pygame.time.get_ticks()
 
 background = (207, 137, 0)
@@ -57,12 +56,8 @@ def cover_zom():
         y += 1
 
 def random_zombie():
+    pygame.time.set_timer(pygame.USEREVENT, 3000)
     random_hole = random.choice(hole_list_rect)
-    # timer = pygame.get_time()
-    # current_time = pygame.time.get_ticks()
-    # if current_time - start_time >= timer:
-    #     zom_rect.visible = False
-
     zom_rect.midtop = random_hole.midbottom
     return random_hole[1]
 
@@ -72,7 +67,6 @@ def start_countdown():
     if playing - last_countdown > 1000:
         last_countdown = now
         game_time -= 1
-
     print_text(str(game_time), 36, white, width // 2, 20)
 
 
@@ -123,11 +117,15 @@ aim_img = aim[0]
 aim_rect = aim_img.get_rect()
 #get_rect return rectangular coordinates
 
+
+
 run = True
 while run:
     for event in pygame.event.get():
         if event.type == QUIT:
             run = False
+        if event.type == pygame.USEREVENT:
+            pos = random_zombie()
         if event.type == MOUSEBUTTONDOWN and not game_over:
             if event.button == 1:
                 if zom_rect.collidepoint(mouse_pos):
@@ -173,9 +171,11 @@ while run:
     if zom_rect.y <= pos:
         zom_rect.y = pos
 
+
     screen.fill(background)
     draw_hole()
 
+    
     if ready_time == 5:
         print_text('Ready?', 60, (180, 0, 0), (width // 2) - 60, 20)
     elif ready_time > 1:
@@ -184,10 +184,13 @@ while run:
         print_text('Go', 60, (0, 255, 0), (width // 2) - 20, 20)
     else:
         screen.blit(zombie, zom_rect)
+        # zom_rect.y += 1
+        # if zom_rect.y >= pos:
+        #     zom_rect.y = pos
         if not game_over:
             start_countdown()
             print_text(f"Score: {score}", 36, (255, 255, 255), 10, 20)
-            print_text(f"Hi: {hit}", 36, (255, 255, 255), 10, 40)
+            print_text(f"Hit: {hit}", 36, (255, 255, 255), 10, 40)
             print_text(f"Miss: {miss}", 36, (255, 255, 255), 10, 60)
 
     cover_zom()
