@@ -69,6 +69,9 @@ def start_countdown():
         game_time -= 1
     print_text(str(game_time), 36, white, width // 2, 20)
 
+def hit_effect():
+    blood_rect
+
 
 pygame.init()
 pygame.mixer.init()
@@ -103,9 +106,14 @@ zombie_sfx = pygame.mixer.Sound(path.join(sound_folder, 'zombie.mp3'))
 hole_base = pygame.image.load(path.join(img_folder, 'Hole_5.png')).convert_alpha()
 hole = pygame.transform.scale(hole_base, (180, 120))
 hole_list_rect = []
+
 zom_base = pygame.image.load(path.join(img_folder, 'zom_1.png')).convert_alpha()
 zombie = pygame.transform.scale(zom_base, (100, 140))
 zom_rect = zombie.get_rect()
+
+blood_base = pygame.image.load(path.join(img_folder, 'blood.png')).convert_alpha()
+blood = pygame.transform.scale(blood_base, (80, 80))
+blood_rect = blood.get_rect()
 #convert_alpha for transparent pixels picture
 
 aim =[]
@@ -129,10 +137,10 @@ while run:
         if event.type == MOUSEBUTTONDOWN and not game_over:
             if event.button == 1:
                 if zom_rect.collidepoint(mouse_pos):
-                    # print("Collide")
                     score += 2
                     hit += 1
                     hit_sfx.play()
+                    # screen.blit(blood, blood_rect)
                     pos = random_zombie()
                     pygame.time.delay(25)
                     zombie_sfx.play()
@@ -184,9 +192,6 @@ while run:
         print_text('Go', 60, (0, 255, 0), (width // 2) - 20, 20)
     else:
         screen.blit(zombie, zom_rect)
-        # zom_rect.y += 1
-        # if zom_rect.y >= pos:
-        #     zom_rect.y = pos
         if not game_over:
             start_countdown()
             print_text(f"Score: {score}", 36, (255, 255, 255), 10, 20)
